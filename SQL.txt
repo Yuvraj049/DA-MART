@@ -1,0 +1,56 @@
+
+
+--1 
+select catg_name from category;
+
+--2
+select seller_id as "Seller ID", sum(quantity) as "Quantity of Items Sold" from  sellers_of_items natural join 
+(select quantity,itemcode from invoice_details natural join invoice where inv_date between date'2022-01-01' and date'2022-01-15') as r
+group by seller_id order by seller_id ASC;
+
+
+--3
+select wishlist_id,item_name,price as "price in Rs."  from wishlist_details natural join items order by wishlist_id asc;
+
+
+--4
+select customer_name,customer_id,sum(quantity*rate) as "Total Amount Bought" from customers natural join invoice natural join invoice_details
+where inv_date between date'2022-01-01' and date'2022-01-30'
+group by customer_id order by customer_id asc;
+
+--5
+select itemcode,sum(quantity*rate) from invoice_details group by itemcode order by sum(quantity*rate) DESC;
+
+--6
+select customer_id,sum(voucher_value*voucher_qty) from Customers natural join Vouchers group by customer_id order by (customer_id) ASC;
+
+--7
+select itemcode,stock from Items where stock= NULL;  -- do null in some items' stock column
+
+--8
+select seller_id as "Seller ID", sum(quantity*rate) as "Amount made by the Item " from  sellers_of_items natural join 
+(select quantity,rate,itemcode from invoice_details natural join invoice where inv_date ='2022-01-01' and itemcode=1 ) as r
+group by seller_id order by seller_id ASC;
+
+
+--9
+select item_name,itemcode, sum(quantity*rate) as "Sale Amount" from  items natural join 
+(select quantity,rate,itemcode from invoice_details natural join invoice where inv_date between date'2022-01-01' and date'2022-01-15') as r
+group by item_name,itemcode order by itemcode ASC;
+
+--10
+select quantity,itemcode from invoice_details natural join items where price > 10 order by quantity DESC limit 3;
+
+--11
+select customer_id from customers where customer_id not in (select customer_id from customers natural join invoice); --add some customers who haven't buy anything
+
+--12
+select seller_id from sellers where seller_id not in (select seller_id from invoice natural join invoice_details 
+natural join sellers_of_items where inv_date between '2022-01-19' and '2022-01-25');
+
+--13
+select catg_id,sum(quantity) as sales from items natural join invoice_details 
+group by catg_id order by sum(quantity)  DESC limit 1 ;
+
+--14
+select itemcode,item_name from wishlist_details where itemcode not in (select itemcode from cart_details);

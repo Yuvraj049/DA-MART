@@ -1,0 +1,147 @@
+CREATE TABLE Category (
+  catg_id varchar(30),
+  catg_name VARCHAR(50),
+  primary key(catg_id)
+);
+
+
+CREATE TABLE Sellers (
+  seller_id INT,
+  seller_name VARCHAR(50) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  warehouse_address VARCHAR(100) NOT NULL,
+  contact_details VARCHAR(50) NOT NULL,
+  PRIMARY KEY(seller_id)
+);
+
+
+CREATE TABLE Items (
+  itemcode int,
+  item_name VARCHAR(50),
+  catg_id varchar(30),
+  price DECIMAL(10,2),
+  lowerbound_price DECIMAL(10,2),
+  stock INT,
+  ave_purchaseprice DECIMAL(10,2),
+  expiry_date DATE,
+  primary key (itemcode),
+  foreign key (catg_id) references Category(catg_id)
+   ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+
+
+create table Sells (
+  itemcode int,
+  seller_id int,
+  primary key(itemcode,seller_id),
+  foreign key (itemcode) references Items(itemcode)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  foreign key (seller_id) references Seller(seller_id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+CREATE TABLE Customers (
+  customer_id INT,
+  customer_name VARCHAR(255),
+  customer_address VARCHAR(255),
+  customer_email VARCHAR(255),
+  contact_details VARCHAR(255),
+   PRIMARY KEY(customer_id)
+);
+
+
+create table Wishlist (
+  wishlist_id int,
+  customer_id int NOT NULL,
+  primary key (wishlist_id),
+  foreign key (customer_id) references Customers(customer_id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+); 
+
+
+create table Wishlist_Details (
+  wishlist_id int,
+  itemcode int,
+  item_name VARCHAR(50) NOT NULL,
+  primary key (itemcode,wishlist_id),
+  foreign key (wishlist_id) references Wishlist(wishlist_id)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  foreign key (itemcode) references Items(itemcode)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+
+
+
+create table Sellers_of_Items (
+  itemcode int,
+  seller_id int,
+  primary key (itemcode,seller_id),
+  foreign key (itemcode) references Items(itemcode)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+CREATE TABLE Invoice (
+  invoice_id int,
+  inv_date DATE,
+  customer_id INT,
+  PRIMARY KEY(invoice_id),
+  FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+CREATE TABLE Invoice_Details (
+  invoice_id INT,
+  itemcode int,
+  quantity INT,
+  rate DECIMAL(10,2),
+  PRIMARY KEY (invoice_id, itemcode),
+  FOREIGN KEY (invoice_id) REFERENCES Invoice(invoice_id)
+    ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY (itemcode) REFERENCES Items(itemcode)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+create table Vouchers (
+  voucher_type varchar(20),
+  customer_id int,
+  voucher_value int NOT NULL,
+  voucher_qty int,
+  primary key (voucher_type,customer_id)
+);
+
+
+
+
+
+
+create table Cart (
+  cart_id int,
+  customer_id int UNIQUE,
+  primary key (cart_id),
+  foreign key (customer_id) references Customers(customer_id)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+create table Cart_Details(
+  cart_id int,
+  itemcode int,
+  qty int NOT NULL,
+  cart_date DATE NOT NULL,
+  primary key (cart_id,itemcode),
+  foreign key (cart_id) references Cart(cart_id),
+    foreign key (itemcode) references Items(itemcode)
+    ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+alter table invoicedetails rename to invoice_details
+alter table items drop column catg_name;
